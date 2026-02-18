@@ -2,9 +2,7 @@
   <div class="page">
     <header class="header">
       <h1 class="title">Geological Localities</h1>
-      <p class="subtitle">
-        Browse geological localities from the public API.
-      </p>
+      <p class="subtitle">Browse geological localities from the public API.</p>
     </header>
 
     <section class="card">
@@ -20,24 +18,8 @@
         </p>
 
         <ul class="list">
-          <li v-for="item in results" :key="item.id" class="row">
-            <div class="name">
-              {{ item.name_en || item.name || 'Unnamed' }}
-            </div>
-
-            <div class="small">
-              ID: {{ item.id }}
-            </div>
-
-            <div class="small">
-              Country:
-              {{
-                item.country?.name_en ||
-                item.country?.name ||
-                item.country ||
-                '—'
-              }}
-            </div>
+          <li v-for="item in results" :key="item.id">
+            <LocalityCard :item="item" />
           </li>
         </ul>
       </div>
@@ -47,16 +29,22 @@
 
 <script setup>
 const API_URL =
-  'https://rwapi.geoloogia.info/api/v1/public/localities/?limit=20&expand=country'
+  "https://rwapi.geoloogia.info/api/v1/public/localities/?limit=20&expand=country";
 
-const { data, pending, error } = await useFetch(API_URL)
+const { data, pending, error } = await useFetch(API_URL);
 
-const results = computed(() => data.value?.results ?? [])
+const results = computed(() => data.value?.results ?? []);
 </script>
 
 <style scoped>
 .page {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial,
+    sans-serif;
   padding: 24px;
   max-width: 1000px;
   margin: 0 auto;
@@ -93,22 +81,6 @@ const results = computed(() => data.value?.results ?? [])
   margin: 0;
   display: grid;
   gap: 10px;
-}
-
-.row {
-  padding: 12px;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
-}
-
-.name {
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.small {
-  font-size: 14px;
-  opacity: 0.85;
 }
 
 .error {
