@@ -4,6 +4,17 @@
       <h1 class="title">Geological Localities</h1>
       <p class="subtitle">Browse geological localities from the public API.</p>
     </header>
+    <div class="controls">
+      <label class="label">
+        Search by name
+        <input
+          v-model="search"
+          class="input"
+          type="text"
+          placeholder="e.g. Hino, borehole, Irase..."
+        />
+      </label>
+    </div>
 
     <section class="card">
       <div v-if="pending">Loading localities...</div>
@@ -27,11 +38,34 @@
   </div>
 </template>
 
-<script setup>
-const API_URL =
-  "https://rwapi.geoloogia.info/api/v1/public/localities/?limit=20&expand=country";
+<script setup lang="ts">
+const LIMIT = 20;
+const search = ref("");
 
-const { data, pending, error } = await useFetch(API_URL);
+// simple debounce: only query after user stops typing
+const debounced = ref("");
+let t: ReturnType<typeof setTimeout> | null = null;
+
+watch(search, (val) => {
+  if (t) clearTimeout(t);
+  t = setTimeout(() => {
+    debounced.value = val.trim();
+  }, 350);
+});
+
+const query = computed(() => {
+  const q: Record<string, any> = {
+    limit: LIMIT,
+    expand: "country",
+  };
+  if (debounced.value) q.name__icontains = debounced.value;
+  return q;
+});
+
+const { data, pending, error } = await useFetch(
+  "https://rwapi.geoloogia.info/api/v1/public/localities/",
+  { query },
+);
 
 const results = computed(() => data.value?.results ?? []);
 </script>
@@ -87,4 +121,23 @@ const results = computed(() => data.value?.results ?? []);
   color: #b00020;
   font-weight: 600;
 }
+.controls {
+  margin: 16px 0;
+}
+
+.label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  opacity: 0.9;
+  max-width: 420px;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
 </style>
