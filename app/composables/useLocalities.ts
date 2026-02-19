@@ -27,7 +27,7 @@ export function useLocalities() {
   watch(search, (val) => {
     if (t) clearTimeout(t)
     t = setTimeout(() => {
-      debounced.value = val.trim()
+      debounced.value = val.trim().slice(0, 80)
     }, 350)
   })
 
