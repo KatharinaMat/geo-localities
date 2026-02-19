@@ -11,7 +11,7 @@
           v-model="search"
           class="input"
           type="text"
-          placeholder="e.g. Hino, borehole, Irase..."
+          placeholder="e.g. Hino, Irase, Hirvli..."
         />
       </label>
     </div>
@@ -20,8 +20,14 @@
       <div v-if="pending">Loading localities...</div>
 
       <div v-else-if="error" class="error">
-        Failed to load localities. Please try again.
+         <p>Failed to load localities. Please try again.</p>
+    <button class="btn" @click="refresh()">Retry</button>
       </div>
+
+        <div v-else-if="isEmpty" class="empty">
+    <p>No results found.</p>
+    <p class="hint">Try a different search term.</p>
+  </div>
 
       <div v-else>
         <p class="meta">
@@ -82,12 +88,13 @@ const query = computed(() => {
   return q;
 });
 
-const { data, pending, error } = await useFetch(
+const { data, pending, error, refresh } = await useFetch(
   "https://rwapi.geoloogia.info/api/v1/public/localities/",
   { query },
 );
 
 const results = computed(() => data.value?.results ?? []);
+const isEmpty = computed(() => !pending.value && !error.value && results.value.length === 0)
 const total = computed(() => data.value?.count ?? 0)
 const page = computed(() => Math.floor(offset.value / LIMIT) + 1)
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / LIMIT)))
@@ -196,6 +203,19 @@ function nextPage() {
   cursor: not-allowed;
 }
 
+.btn:hover {
+  opacity: 0.9;
+}
+
+.empty {
+  padding: 8px 0;
+}
+
+.hint {
+  opacity: 0.75;
+  margin-top: 6px;
+  font-size: 14px;
+}
 .pageinfo {
   font-size: 14px;
   opacity: 0.85;
