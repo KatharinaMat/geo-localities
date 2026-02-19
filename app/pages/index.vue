@@ -16,37 +16,35 @@
       </label>
     </div>
 
-    <section class="card">
+    <section class="panel">
       <div v-if="pending">Loading localities...</div>
 
       <div v-else-if="error" class="error">
-         <p>Failed to load localities. Please try again.</p>
-    <button class="btn" @click="refresh()">Retry</button>
+        <p>Failed to load localities. Please try again.</p>
+        <button class="btn" @click="refresh()">Retry</button>
       </div>
 
-        <div v-else-if="isEmpty" class="empty">
-    <p>No results found.</p>
-    <p class="hint">Try a different search term.</p>
-  </div>
+      <div v-else-if="isEmpty" class="empty">
+        <p>No results found.</p>
+        <p class="hint">Try a different search term.</p>
+      </div>
 
       <div v-else>
         <p class="meta">
           Showing {{ results.length }} of {{ data?.count ?? 0 }}
-         <div class="pagination">
-  <button class="btn" :disabled="!canPrev" @click="prevPage">
-    Previous
-  </button>
-
-  <div class="pageinfo">
-    Page {{ page }} / {{ totalPages }}
-  </div>
-
-  <button class="btn" :disabled="!canNext" @click="nextPage">
-    Next
-  </button>
-</div>
-
         </p>
+
+        <div class="pagination">
+          <button class="btn" :disabled="!canPrev" @click="prevPage">
+            Previous
+          </button>
+
+          <div class="pageinfo">Page {{ page }} / {{ totalPages }}</div>
+
+          <button class="btn" :disabled="!canNext" @click="nextPage">
+            Next
+          </button>
+        </div>
 
         <ul class="list">
           <li v-for="item in results" :key="item.id">
@@ -73,19 +71,11 @@ const {
   canNext,
   prevPage,
   nextPage,
-} = useLocalities()
+} = useLocalities();
 </script>
-
 
 <style scoped>
 .page {
-  font-family:
-    system-ui,
-    -apple-system,
-    Segoe UI,
-    Roboto,
-    Arial,
-    sans-serif;
   padding: 24px;
   max-width: 1000px;
   margin: 0 auto;
@@ -97,7 +87,7 @@ const {
 
 .title {
   margin: 0;
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .subtitle {
@@ -105,15 +95,15 @@ const {
   opacity: 0.8;
 }
 
-.card {
-  padding: 16px;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-}
-
 .meta {
   margin: 0 0 12px;
   opacity: 0.8;
+}
+
+.panel {
+  padding: 16px;
+  border: 1px solid #3e290e;
+  border-radius: 12px;
 }
 
 .list {
@@ -128,6 +118,7 @@ const {
   color: #b00020;
   font-weight: 600;
 }
+
 .controls {
   margin: 16px 0;
 }
@@ -143,12 +134,19 @@ const {
 
 .input {
   padding: 10px 12px;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
+  border: 1px solid #3e290e;
+  border-radius: 12px;
   font-size: 16px;
   width: 100%;
   box-sizing: border-box;
 }
+
+.input:focus {
+  outline: none;
+  border-color: #c37918;
+  box-shadow: 0 0 0 3px rgba(195, 121, 24, 0.18);
+}
+
 .pagination {
   display: flex;
   align-items: center;
@@ -158,20 +156,36 @@ const {
 }
 
 .btn {
-  padding: 10px 12px;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid #3e290e;
+  border-radius: 12px;
   background: transparent;
   cursor: pointer;
-}
+  font-weight: 500;
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease,
+    border-color 120ms ease;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  background: #c37918;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .empty {
@@ -183,10 +197,12 @@ const {
   margin-top: 6px;
   font-size: 14px;
 }
+
 .pageinfo {
   font-size: 14px;
   opacity: 0.85;
 }
+
 @media (max-width: 600px) {
   .page {
     padding: 16px;
@@ -196,9 +212,8 @@ const {
     font-size: 22px;
   }
 
-  .card {
+  .panel {
     padding: 12px;
   }
 }
-
 </style>
