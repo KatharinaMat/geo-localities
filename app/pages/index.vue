@@ -59,60 +59,23 @@
 </template>
 
 <script setup lang="ts">
-const LIMIT = 20;
-const search = ref("");
-const offset = ref(0);
-
-// simple debounce: only query after user stops typing
-const debounced = ref("");
-let t: ReturnType<typeof setTimeout> | null = null;
-
-watch(search, (val) => {
-  if (t) clearTimeout(t);
-  t = setTimeout(() => {
-    debounced.value = val.trim();
-  }, 350);
-});
-watch(debounced, () => {
-  offset.value = 0
-})
-
-
-const query = computed(() => {
-  const q: Record<string, any> = {
-    limit: LIMIT,
-    offset: offset.value,
-    expand: "country",
-  };
-  if (debounced.value) q.name__icontains = debounced.value;
-  return q;
-});
-
-const { data, pending, error, refresh } = await useFetch(
-  "https://rwapi.geoloogia.info/api/v1/public/localities/",
-  { query },
-);
-
-const results = computed(() => data.value?.results ?? []);
-const isEmpty = computed(() => !pending.value && !error.value && results.value.length === 0)
-const total = computed(() => data.value?.count ?? 0)
-const page = computed(() => Math.floor(offset.value / LIMIT) + 1)
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / LIMIT)))
-
-const canPrev = computed(() => offset.value > 0)
-const canNext = computed(() => offset.value + LIMIT < total.value)
-
-function prevPage() {
-  if (!canPrev.value) return
-  offset.value = Math.max(0, offset.value - LIMIT)
-}
-
-function nextPage() {
-  if (!canNext.value) return
-  offset.value = offset.value + LIMIT
-}
-
+const {
+  search,
+  data,
+  pending,
+  error,
+  refresh,
+  results,
+  isEmpty,
+  page,
+  totalPages,
+  canPrev,
+  canNext,
+  prevPage,
+  nextPage,
+} = useLocalities()
 </script>
+
 
 <style scoped>
 .page {
@@ -175,6 +138,7 @@ function nextPage() {
   font-size: 14px;
   opacity: 0.9;
   max-width: 420px;
+  width: 100%;
 }
 
 .input {
@@ -182,12 +146,15 @@ function nextPage() {
   border: 1px solid #2a2a2a;
   border-radius: 10px;
   font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .pagination {
   display: flex;
   align-items: center;
   gap: 12px;
   margin: 12px 0 16px;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -220,6 +187,18 @@ function nextPage() {
   font-size: 14px;
   opacity: 0.85;
 }
+@media (max-width: 600px) {
+  .page {
+    padding: 16px;
+  }
 
+  .title {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+}
 
 </style>
