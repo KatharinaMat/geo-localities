@@ -26,6 +26,20 @@
       <div v-else>
         <p class="meta">
           Showing {{ results.length }} of {{ data?.count ?? 0 }}
+         <div class="pagination">
+  <button class="btn" :disabled="!canPrev" @click="prevPage">
+    Previous
+  </button>
+
+  <div class="pageinfo">
+    Page {{ page }} / {{ totalPages }}
+  </div>
+
+  <button class="btn" :disabled="!canNext" @click="nextPage">
+    Next
+  </button>
+</div>
+
         </p>
 
         <ul class="list">
@@ -41,6 +55,7 @@
 <script setup lang="ts">
 const LIMIT = 20;
 const search = ref("");
+const offset = ref(0);
 
 // simple debounce: only query after user stops typing
 const debounced = ref("");
@@ -52,10 +67,15 @@ watch(search, (val) => {
     debounced.value = val.trim();
   }, 350);
 });
+watch(debounced, () => {
+  offset.value = 0
+})
+
 
 const query = computed(() => {
   const q: Record<string, any> = {
     limit: LIMIT,
+    offset: offset.value,
     expand: "country",
   };
   if (debounced.value) q.name__icontains = debounced.value;
@@ -68,6 +88,23 @@ const { data, pending, error } = await useFetch(
 );
 
 const results = computed(() => data.value?.results ?? []);
+const total = computed(() => data.value?.count ?? 0)
+const page = computed(() => Math.floor(offset.value / LIMIT) + 1)
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / LIMIT)))
+
+const canPrev = computed(() => offset.value > 0)
+const canNext = computed(() => offset.value + LIMIT < total.value)
+
+function prevPage() {
+  if (!canPrev.value) return
+  offset.value = Math.max(0, offset.value - LIMIT)
+}
+
+function nextPage() {
+  if (!canNext.value) return
+  offset.value = offset.value + LIMIT
+}
+
 </script>
 
 <style scoped>
@@ -139,5 +176,30 @@ const results = computed(() => data.value?.results ?? []);
   border-radius: 10px;
   font-size: 16px;
 }
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.btn {
+  padding: 10px 12px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageinfo {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
 
 </style>
