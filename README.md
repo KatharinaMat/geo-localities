@@ -1,75 +1,50 @@
-# Nuxt Minimal Starter
+# Geological Localities Browser
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A small responsive Nuxt application that allows users to browse geological localities from a public API.
 
-## Setup
+**Live Demo:** https://geo-local-three.vercel.app/
 
-Make sure to install dependencies:
+---
+
+## Features
+
+- Fetches geological localities from a public API
+- Displays locality name, ID and country
+- Server-side search with debounced input
+- Pagination with Next / Previous navigation
+- Graceful error handling with retry option
+- Empty state when no results are found
+- Responsive and tidy UI
+
+---
+
+## Technical Approach
+
+The project is built using **Nuxt (Composition API)** with a focus on clean architecture:
+
+- **pages/** – page-level layout and routing
+- **components/** – reusable UI components (LocalityCard)
+- **composables/** – data fetching and state logic (`useLocalities`)
+- Scoped component styling with small global design adjustments
+
+Data fetching uses Nuxt's `useFetch`, combined with debounced search and safe fallbacks to handle incomplete API responses.
+
+---
+
+## Data Source
+
+Public API:  
+https://rwapi.geoloogia.info/api/v1/public/localities
+
+The `expand=country` parameter is used to retrieve readable country names.
+
+---
+
+## Running Locally
 
 ```bash
-# npm
+git clone <your-repo-url>
+cd <project-folder>
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
