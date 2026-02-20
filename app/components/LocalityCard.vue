@@ -8,13 +8,23 @@
 
     <div class="small">
       Country:
-      {{ item.country?.name_en || item.country?.name || item.country || "-" }}
+      {{ item.country?.name_en || item.country?.name || "-" }}
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-defineProps<{ item: any }>();
+interface Locality {
+  id: number;
+  name?: string;
+  name_en?: string;
+  country?: {
+    name?: string;
+    name_en?: string;
+  };
+}
+
+defineProps<{ item: Locality }>();
 </script>
 
 <style scoped>

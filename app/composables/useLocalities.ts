@@ -13,14 +13,10 @@ interface LocalitiesResponse {
   results: Locality[]
 }
 
-// app/composables/useLocalities.ts
 export function useLocalities() {
   const LIMIT = 20
-
   const search = ref('')
   const offset = ref(0)
-
-  // debounce search
   const debounced = ref('')
   let t: ReturnType<typeof setTimeout> | null = null
 
@@ -31,13 +27,12 @@ export function useLocalities() {
     }, 350)
   })
 
-  // reset pagination when search changes
   watch(debounced, () => {
     offset.value = 0
   })
 
   const query = computed(() => {
-    const q: Record<string, any> = {
+    const q: Record<string, string | number> = {
       limit: LIMIT,
       offset: offset.value,
       expand: 'country',
@@ -75,26 +70,19 @@ export function useLocalities() {
   )
 
   return {
-    // state
     search,
-
-    // data/state from fetch
     data,
     pending,
     error,
     refresh,
     results,
     total,
-
-    // pagination
     page,
     totalPages,
     canPrev,
     canNext,
     prevPage,
     nextPage,
-
-    // ui helpers
     isEmpty,
     LIMIT,
     offset,
