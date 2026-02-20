@@ -2,7 +2,7 @@
 
 A small responsive Nuxt application that allows users to browse geological localities from a public API.
 
-**Live Demo:** https://geo-local-three.vercel.app/
+**Live Demo:** https://geo-localities.vercel.app/
 
 ---
 
